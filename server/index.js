@@ -20,12 +20,31 @@ const myMiddleware = (request, response, next) => {
   next(); // tell express to move to the next middleware function
 };
 
-//Convert String JSON to JS Object
-app.use(express.json());
-app.use(myMiddleware);
 
-app.use("/pizzas",pizzas);
-app.use("/orders",orders);
+// CORS Middleware
+const cors = (req, res, next) => {
+  res.setHeader(
+    "Access-Control-Allow-Headers",
+    "X-Requested-With,content-type, Accept,Authorization,Origin"
+  );
+  res.setHeader("Access-Control-Allow-Origin", "*");
+  res.setHeader(
+    "Access-Control-Allow-Methods",
+    "GET, POST, OPTIONS, PUT, PATCH, DELETE"
+  );
+  res.setHeader("Access-Control-Allow-Credentials", true);
+  next();
+};
+
+
+
+//Convert String JSON to JS Object
+//converts json string data from front end to actual json object to use or store in backend
+app.use(express.json());
+app.use(myMiddleware); // use the myMiddleware for every request to the app
+app.use(cors);
+app.use("/pizzas", pizzas);
+app.use("/orders", orders);
 
 app
   .route("/")
@@ -38,14 +57,9 @@ app
   });
 
 
-
-
-
 app.route("/**").get((request, response) => {
   response.status(404).send("Not Found");
 });
-
-
 
 
 //Line below is always last
